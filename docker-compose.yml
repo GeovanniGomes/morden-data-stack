@@ -1,0 +1,44 @@
+version: '3'
+services:
+  airbyte:
+    image: airbyte/airbyte:0.30.0
+    ports:
+      - '8000:8000'
+    volumes:
+      - './airbyte:/airbyte'
+    depends_on:
+      - db
+    environment:
+      - AIRBYTE_CONFIG_DIR=/airbyte
+      - AIRBYTE_DB_USER=airbyte
+      - AIRBYTE_DB_PASSWORD=airbyte
+      - AIRBYTE_DB_NAME=airbyte
+      - AIRBYTE_DB_HOST=db
+      - AIRBYTE_DB_PORT=5432
+
+  # airflow:
+  #   image: apache/airflow:latest
+  #   ports:
+  #     - '8080:8080'
+  #   volumes:
+  #     - './dags:/opt/airflow/dags'
+  #     - './logs:/opt/airflow/logs'
+  #     - './plugins:/opt/airflow/plugins'
+  #   environment:
+  #     - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airbyte:airbyte@db/airbyte
+  #     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+  #     - AIRFLOW__CORE__LOAD_EXAMPLES=False
+  #     - AIRFLOW__WEBSERVER__RBAC=False
+  #   depends_on:
+  #     - db
+  #   command: webserver
+
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=airbyte
+      - POSTGRES_PASSWORD=airbyte
+      - POSTGRES_DB=airbyte
+    volumes:
+      - './postgres:/var/lib/postgresql/data'
